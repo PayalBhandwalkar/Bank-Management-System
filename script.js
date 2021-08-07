@@ -62,11 +62,15 @@ const inputCloseUsername = document.querySelector('.form__input--user');
 const inputClosePin = document.querySelector('.form__input--pin');
 
 
-const displayMovements = function(movements) {
+const displayMovements = function(movements, sort = false) {
  containerMovements.innerHTML = '';
 
 
- movements.forEach(function(mov, i) {
+ const movs = sort ? movements.slice()
+ .sort((a, b) => a - b) : movements;
+
+
+ movs.forEach(function(mov, i) {
    const type = mov > 0 ? 'deposit' : 'withdrawal';
 
    const html = `
@@ -193,8 +197,55 @@ if (amount > 0 &&
  //update UI
    updateUI(currrentAccount);
  }
+});
+
+btnLoan.addEventListener('click',function(e) {
+  e.preventDefault();
+
+  const amount = Number(inputLoanAmount.value);
+
+  if(amount > 0 && currrentAccount.movements
+    .some(mov => mov >= amount*0.1)) {
+
+      //add the movement
+      currrentAccount.movements.push(amount);
+
+      //upadte UI
+      updateUI(currrentAccount);
+}
+      inputLoanAmount.value = '';
+});
 
 
+btnClose.addEventListener('click',function(e) {
+  e.preventDefault();
+  console.log('Delete');
+  
+
+  if(
+    inputCloseUsername.value === currrentAccount.username 
+    && Number(inputClosePin.value)===currrentAccount.pin)
+{
+  const index = accounts.findIndex(
+    acc => acc.username === currrentAccount.username);
+
+  console.log(index);
+
+//delete account
+  accounts.splice(index, 1);
+
+  //hide UI
+  containerApp.style.opacity = 0;
+}
+
+inputCloseUsername.value = inputClosePin.value = '';
+});
+
+let sorted = false;
+btnSort.addEventListener('click', function(e) {
+  e.preventDefault();
+  displayMovements(currrentAccount.movements, !sorted);
+  sorted = !sorted;
 });
 /*const calcPrintBalance = function(movements) 
 {
@@ -334,9 +385,52 @@ const balance = movements.reduce((
      acc => acc.owner === 'Hessica Davis');
      console.log(account);
 
+    // every
 
+     /*const accountMovements = accounts.map(
+      acc => acc.movements);
+      console.log(accountMovements);
 
+      const allMovements = accountMovements.flat();
+      console.log(allMovements);
 
+      const overallBalance = allMovements.reduce((acc,mov)
+      => acc+mov, 0);
+      console.log(overallBalance);*/
+    /*
+    //short //flat
+    const overallBalance = accounts
+    .map(acc=>acc.movements)
+    .flat()
+    .reduce((acc, mov) => acc+mov, 0);
+    console.log(overallBalance);
+    
+    //flat map
+    const overallBalance = accounts
+    .flatmap(acc=>acc.movements)
+    .reduce((acc, mov) => acc+mov, 0);
+    console.log(overallBalance);
+    */
+   /* //sorting with strings
+    const owners = ['Jonas','Zach','Adam','Martha'];
+    console.log(owners.sort());
+    console.log(owners);
+
+    //sorting with numbers
+    console.log(movements);
+    //ascending
+    movements.sort((a, b) => {
+    if(a > b) return 1;
+    if(a < b) return -1;
+    });
+    console.log(movements);
+
+    //desending
+    movements.sort((a, b) => {
+      if(a > b) return -1;
+      if(a < b) return 1;
+      });
+      console.log(movements);*/
 
 
 
